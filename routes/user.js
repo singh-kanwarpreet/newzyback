@@ -1,9 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const Notes = require('../model/User.js');
+const User = require('../model/User.js'); // Corrected import
 const passport = require('passport');
 const bcrypt = require('bcrypt');
+const flash = require('connect-flash'); // Added flash import
 const session = require('express-session');
+
+router.use(session({
+  secret: process.env.SECRET_KEY,
+  resave: false,
+  saveUninitialized: false
+}));
+
+router.use(passport.initialize());
+router.use(passport.session());
+router.use(flash());
 
 // Sign Up Route
 router.post('/signup', async (req, res) => {
@@ -13,7 +24,6 @@ router.post('/signup', async (req, res) => {
   try { 
     const user = new User({ email, password: hashedPassword });
     await user.save();
-    // Send JSON response instead of redirecting
     res.json({ success: true, message: 'Signup successful' });
   } catch (e) {
     res.status(400).json({ success: false, message: 'Signup failed' });
@@ -29,18 +39,17 @@ router.post('/login', (req, res, next) => {
     }
     req.logIn(user, (err) => {
       if (err) return next(err);
-      // Send JSON response instead of redirecting
-      return res.json({ success: true, message: 'Login successful'});
+      return res.json({ success: true, message: 'Login successful' });
     });
   })(req, res, next);
 });
 
 // Logout Route
-router.get('/logout', (req, res) => {
+router.get('/logout', (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
-    // Send JSON response for logout confirmation
     res.json({ success: true, message: 'Logged out successfully' });
   });
 });
+
 module.exports = router;
