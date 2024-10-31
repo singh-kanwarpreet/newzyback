@@ -7,7 +7,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const User = require('./model/User'); 
 const Notes = require('./model/notes'); 
-
+require('dotenv').config();
 
 const app = express();
 const port = 3000;
@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // MongoDB connection
-mongoose.connect('mongodb+srv://kanwarpreet388:5wU6YXaBAc3uUmVL@cluster0.uoahkxk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('Successfully connected to MongoDB');
   })
@@ -29,7 +29,7 @@ mongoose.connect('mongodb+srv://kanwarpreet388:5wU6YXaBAc3uUmVL@cluster0.uoahkxk
 // Passport.js setup
 require('./passport.js')(passport); 
 app.use(session({
-  secret: 'yourSecretKey',
+  secret: process.env.SECRET_KEY,
   resave: false,
   saveUninitialized: false
 }));
