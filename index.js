@@ -40,7 +40,9 @@ app.use(flash());
 // Routes
 
 
-
+app.get('/', (req, res) => {
+  res.send('Welcome to the backend API!');
+});
 
 app.use('/news', require('./routes/news')); 
 app.use('/notes', require('./routes/notes')); 
